@@ -5,6 +5,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import com.loens2.hand_landmarker_mediapipe.hand_landmarker.HandLandmarkerHelper
 
 /** HandLandmarkerMediapipePlugin */
 class HandLandmarkerMediapipePlugin :
@@ -16,6 +17,8 @@ class HandLandmarkerMediapipePlugin :
     // when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
 
+    private var handLandmankerHelper: HandLandmarkerHelper? = null
+
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hand_landmarker_mediapipe")
         channel.setMethodCallHandler(this)
@@ -26,8 +29,32 @@ class HandLandmarkerMediapipePlugin :
         result: Result
     ) {
         when (call.method) {
-            "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}"),
-            else -> result.notImplemented();
+            "initialize" -> {
+                handLandmankerHelper = HandLandmarkerHelper(
+                    minHandDetectionConfidence = ,
+                    minHandTrackingConfidence = ,
+                    minHandPresenceConfidence = ,
+                    maxNumHands = ,
+                    currentDelegate = ,
+                    runningMode = RunningMode,
+                    handLandmarkerHelperListener = null
+                );
+            },
+            "clearHandLandmarker" -> {
+                handLandmankerHelper
+            },
+            "isClose" -> result.sucess(),
+            "setupHandLandmarker" -> {
+                handLandmankerHelper?.setupHandLandmarker()
+                result.success()
+            },
+            "detectLiveStream" -> {
+                val data = handLandmankerHelper?.detectLiveStream()
+                result.success(data);
+            },
+            "detectVideoFile",
+            "detectImage",
+            else -> result.notImplemented()
         }
     }
 

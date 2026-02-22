@@ -1,23 +1,18 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:camera/camera.dart';
+import 'dart:typed_data';
 
 import 'hand_landmarker_mediapipe_method_channel.dart';
 
 abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
-  /// Constructs a HandLandmarkerMediapipePlatform.
   HandLandmarkerMediapipePlatform() : super(token: _token);
 
   static final Object _token = Object();
 
   static HandLandmarkerMediapipePlatform _instance = MethodChannelHandLandmarkerMediapipe();
 
-  /// The default instance of [HandLandmarkerMediapipePlatform] to use.
-  ///
-  /// Defaults to [MethodChannelHandLandmarkerMediapipe].
   static HandLandmarkerMediapipePlatform get instance => _instance;
 
-  /// Platform-specific implementations should set this with their own
-  /// platform-specific class that extends [HandLandmarkerMediapipePlatform] when
-  /// they register themselves.
   static set instance(HandLandmarkerMediapipePlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
@@ -26,4 +21,46 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  Future<void> clearHandLandmarker() async {
+    throw UnimplementedError('clearHandLandmarker() has not been implemented.');
+  }
+
+  Future<bool?> isClose() async {
+    throw UnimplementedError('isClose() has not been implemented.');
+  }
+
+  Future<void> setupHandLandmarker() async {
+    throw UnimplementedError('setupHandLandmarker() has not been implemented.');
+  }
+
+  Future<List<HandLandmark>?> detectLiveStream({
+    required Map<String, Object> imageData,
+    required bool isFrontCamera
+  }) async {
+    throw UnimplementedError('detectLiveStream() has not been implemented.');
+  }
+
+  Future<List<HandLandmark>?> detectVideoFile({
+    required XFile videoFile,
+    required int inferenceIntervalMs
+  }) async {
+    throw UnimplementedError('detectVideoFile() has not been implemented.');
+  }
+
+  Future<List<HandLandmark>?> detectImage({
+    required Uint8List imageData
+  }) async {
+    throw UnimplementedError('detectImage() has not been implemented.');
+  }
+}
+
+class HandLandmark {
+  final int x;
+  final int y;
+
+  HandLandmark({
+    required this.x,
+    required this.y
+  });
 }
