@@ -31,6 +31,7 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
 import java.nio.Buffer
+import androidx.core.graphics.createBitmap
 
 class HandLandmarkerHelper(
     var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
@@ -157,25 +158,18 @@ class HandLandmarkerHelper(
 
         // Copy out RGB bits from the frame to a bitmap buffer
         val bitmapBuffer =
-            Bitmap.createBitmap(
-                imageData.width,
-                imageData.height,
-                Bitmap.Config.ARGB_8888
-            )
-        bitmapBuffer.copyPixelsFromBuffer(imageData.data) }
-        imageProxy.close()
+            createBitmap(imageData.width, imageData.height)
+        bitmapBuffer.copyPixelsFromBuffer(imageData.data)
 
         val matrix = Matrix().apply {
-            // Rotate the frame received from the camera to be in the same direction as it'll be shown
-            postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
 
             // flip image if user use front camera
             if (isFrontCamera) {
                 postScale(
                     -1f,
                     1f,
-                    imageProxy.width.toFloat(),
-                    imageProxy.height.toFloat()
+                    imageData.width.toFloat(),
+                    imageData.height.toFloat()
                 )
             }
         }

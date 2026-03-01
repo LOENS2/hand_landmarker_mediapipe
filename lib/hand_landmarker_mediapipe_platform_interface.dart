@@ -18,8 +18,16 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<void> init({
+    required double minHandDetectionConfidence,
+    required double minHandTrackingConfidence,
+    required double minHandPresenceConfidence,
+    required int maxNumHands,
+    required Delegate currentDelegate,
+    required RunningMode runningMode,
+    required Future<void> Function(List<HandLandmark>? handLandmarks) onHandDetected
+  }) async {
+    throw UnimplementedError('init() has not been implemented.');
   }
 
   Future<void> clearHandLandmarker() async {
@@ -34,7 +42,7 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     throw UnimplementedError('setupHandLandmarker() has not been implemented.');
   }
 
-  Future<List<HandLandmark>?> detectLiveStream({
+  Future<void> detectLiveStream({
     required Map<String, Object> imageData,
     required bool isFrontCamera
   }) async {
@@ -49,18 +57,33 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
   }
 
   Future<List<HandLandmark>?> detectImage({
-    required Uint8List imageData
+    required Uint8List imageData,
+    required int width,
+    required int height
   }) async {
     throw UnimplementedError('detectImage() has not been implemented.');
   }
 }
 
 class HandLandmark {
-  final int x;
-  final int y;
+  final double x;
+  final double y;
+  final double z;
 
   HandLandmark({
     required this.x,
-    required this.y
+    required this.y,
+    required this.z
   });
+}
+
+enum RunningMode {
+  image,
+  video,
+  liveStream
+}
+
+enum Delegate {
+  cpu,
+  gpu
 }

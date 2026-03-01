@@ -4,25 +4,19 @@ import 'package:camera/camera.dart';
 import 'hand_landmarker_mediapipe_platform_interface.dart';
 
 class HandLandmarkerMediapipe {
-
-
-  Future<String?> getPlatformVersion() {
-    return HandLandmarkerMediapipePlatform.instance.getPlatformVersion();
-  }
-
   Future<void> clearHandLandmarker() async {
-    HandLandmarkerMediapipePlatform.instance.clearHandLandmarker();
+    await HandLandmarkerMediapipePlatform.instance.clearHandLandmarker();
   }
 
   Future<bool?> isClose() async {
-    return HandLandmarkerMediapipePlatform.instance.isClose();
+    return await HandLandmarkerMediapipePlatform.instance.isClose();
   }
 
   Future<void> setupHandLandmarker() async {
-    HandLandmarkerMediapipePlatform.instance.setupHandLandmarker();
+    await HandLandmarkerMediapipePlatform.instance.setupHandLandmarker();
   }
 
-  Future<List<HandLandmark>?> detectLiveStream({
+  Future<void> detectLiveStream({
     required CameraImage cameraImage,
     required bool isFrontCamera
   }) async {
@@ -32,7 +26,7 @@ class HandLandmarkerMediapipe {
       'plane': cameraImage.planes.first.bytes,
     };
 
-    return HandLandmarkerMediapipePlatform.instance.detectLiveStream(
+    await HandLandmarkerMediapipePlatform.instance.detectLiveStream(
         imageData: imageData,
         isFrontCamera: isFrontCamera
     );
@@ -42,15 +36,20 @@ class HandLandmarkerMediapipe {
     required XFile videoFile,
     required int inferenceIntervalMs
   }) async {
-    return HandLandmarkerMediapipePlatform.instance.detectVideoFile(
+    return await HandLandmarkerMediapipePlatform.instance.detectVideoFile(
         videoFile: videoFile, inferenceIntervalMs: inferenceIntervalMs
     );
   }
 
   Future<List<HandLandmark>?> detectImage({
-    required Uint8List imageData
+    required Uint8List imageData,
+    required int width,
+    required int height
   }) async {
-    return HandLandmarkerMediapipePlatform.instance
-        .detectImage(imageData: imageData);
+    return await HandLandmarkerMediapipePlatform.instance.detectImage(
+      imageData: imageData,
+      width: width,
+      height: height
+    );
   }
 }
