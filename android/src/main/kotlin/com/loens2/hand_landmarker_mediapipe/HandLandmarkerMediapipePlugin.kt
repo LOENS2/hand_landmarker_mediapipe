@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.YuvImage
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import androidx.core.graphics.createBitmap
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -27,6 +29,7 @@ class HandLandmarkerMediapipePlugin :
     private lateinit var channel: MethodChannel
 
     private lateinit var appContext: Context
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private var handLandmankerHelper: HandLandmarkerHelper? = null
 
@@ -50,28 +53,37 @@ class HandLandmarkerMediapipePlugin :
                 val runningMode = call.argument<Int>("runningMode") ?: 0
                 val handLandmarkerHelperListener = object : HandLandmarkerHelper.LandmarkerListener {
                     override fun onError(error: String, errorCode: Int) {
-                        channel.invokeMethod(
-                            "onLandmarkError",
-                            hashMapOf(
-                                "message" to error,
-                                "code" to errorCode
+                        mainHandler.post {
+                            channel.invokeMethod(
+                                "onLandmarkError",
+                                hashMapOf(
+                                    "message" to error,
+                                    "code" to errorCode
+                                )
                             )
-                        )
+                        }
                     }
 
                     override fun onResults(resultBundle: HandLandmarkerHelper.ResultBundle) {
                         val landmarkList = resultBundleToList(resultBundle)
-                        channel.invokeMethod(
-                            "onLandmarkResults",
-                            hashMapOf(
-                                "inferenceTimeMs" to resultBundle.inferenceTime,
-                                "imageWidth" to resultBundle.inputImageWidth,
-                                "imageHeight" to resultBundle.inputImageHeight,
-                                "landmarks" to landmarkList
+                        mainHandler.post {
+                            channel.invokeMethod(
+                                "onLandmarkResults",
+                                hashMapOf(
+                                    "inferenceTimeMs" to resultBundle.inferenceTime,
+                                    "imageWidth" to resultBundle.inputImageWidth,
+                                    "imageHeight" to resultBundle.inputImageHeight,
+                                    "landmarks" to landmarkList
+                                )
                             )
-                        )
+                        }
                     }
                 }
+
+                android.util.Log.d(
+                    "HandLandmarkerPlugin",
+                    "initialize: runningMode=$runningMode currentDelegate=$currentDelegate maxNumHands=$maxNumHands"
+                )
 
                 handLandmankerHelper = HandLandmarkerHelper(
                     minHandDetectionConfidence = minHandDetectionConfidence.toFloat(),

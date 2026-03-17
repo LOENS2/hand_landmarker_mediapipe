@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:ffi';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -25,8 +24,19 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required Future<void> Function(List<Hand>? hands) onHandDetected
   }) async {
     _onHandDetected = onHandDetected;
-    await setupHandLandmarker();
     await _setupNativeCallbacks();
+    await methodChannel.invokeMethod(
+      'initialize',
+      <String, Object>{
+        'minHandDetectionConfidence': minHandDetectionConfidence,
+        'minHandTrackingConfidence': minHandTrackingConfidence,
+        'minHandPresenceConfidence': minHandPresenceConfidence,
+        'maxNumHands': maxNumHands,
+        'currentDelegate': currentDelegate.index,
+        'runningMode': runningMode.index
+      }
+    );
+    await setupHandLandmarker();
   }
 
   Future<void> _setupNativeCallbacks() async {
@@ -81,12 +91,12 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required Map<String, Object> imageData,
     required bool isFrontCamera
   }) async {
-    await methodChannel.invokeListMethod<HandLandmark>(
-      'detectLiveStreamWrapper',
-      [
-        imageData,
-        isFrontCamera
-      ]
+    await methodChannel.invokeMethod(
+      'detectLiveStream',
+      <String, Object>{
+        'imageData': imageData,
+        'isFrontCamera': isFrontCamera,
+      },
     );
   }
 
