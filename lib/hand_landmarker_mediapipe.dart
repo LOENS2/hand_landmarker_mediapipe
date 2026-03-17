@@ -40,10 +40,16 @@ class HandLandmarkerMediapipe {
     required CameraImage cameraImage,
     required bool isFrontCamera
   }) async {
+    List<Uint8List>? planes;
+
     final imageData = {
       'width': cameraImage.width,
       'height': cameraImage.height,
-      'plane': cameraImage.planes.first.bytes,
+      'planes': cameraImage.planes.map((p) => {
+        'bytes': p.bytes,
+        'bytesPerRow': p.bytesPerRow,
+        'bytesPerPixel': p.bytesPerPixel,
+      }).toList(),
     };
 
     await HandLandmarkerMediapipePlatform.instance.detectLiveStream(

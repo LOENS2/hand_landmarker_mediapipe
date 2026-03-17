@@ -145,7 +145,7 @@ class HandLandmarkerHelper(
 
     // Convert the ImageProxy to MP Image and feed it to HandlandmakerHelper.
     fun detectLiveStream(
-        imageData: ImageData,
+        bitmap: Bitmap,
         isFrontCamera: Boolean
     ) {
         if (runningMode != RunningMode.LIVE_STREAM) {
@@ -157,9 +157,6 @@ class HandLandmarkerHelper(
         val frameTime = SystemClock.uptimeMillis()
 
         // Copy out RGB bits from the frame to a bitmap buffer
-        val bitmapBuffer =
-            createBitmap(imageData.width, imageData.height)
-        bitmapBuffer.copyPixelsFromBuffer(imageData.data)
 
         val matrix = Matrix().apply {
 
@@ -168,13 +165,13 @@ class HandLandmarkerHelper(
                 postScale(
                     -1f,
                     1f,
-                    imageData.width.toFloat(),
-                    imageData.height.toFloat()
+                    bitmap.width.toFloat(),
+                    bitmap.height.toFloat()
                 )
             }
         }
         val rotatedBitmap = Bitmap.createBitmap(
-            bitmapBuffer, 0, 0, bitmapBuffer.width, bitmapBuffer.height,
+            bitmap, 0, 0, bitmap.width, bitmap.height,
             matrix, true
         )
 
@@ -366,12 +363,6 @@ class HandLandmarkerHelper(
         val inferenceTime: Long,
         val inputImageHeight: Int,
         val inputImageWidth: Int,
-    )
-
-    data class ImageData(
-        val data: Buffer,
-        val width: Int,
-        val height: Int
     )
 
     interface LandmarkerListener {
