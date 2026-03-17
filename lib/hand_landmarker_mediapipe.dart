@@ -4,6 +4,26 @@ import 'package:camera/camera.dart';
 import 'hand_landmarker_mediapipe_platform_interface.dart';
 
 class HandLandmarkerMediapipe {
+  HandLandmarkerMediapipe({
+    required double minHandDetectionConfidence,
+    required double minHandTrackingConfidence,
+    required double minHandPresenceConfidence,
+    required int maxNumHands,
+    required Delegate currentDelegate,
+    required RunningMode runningMode,
+    required Future<void> Function(List<Hand>? hands) onHandDetected
+  }) {
+    HandLandmarkerMediapipePlatform.instance.init(
+        minHandDetectionConfidence: minHandDetectionConfidence,
+        minHandTrackingConfidence: minHandTrackingConfidence,
+        minHandPresenceConfidence: minHandPresenceConfidence,
+        maxNumHands: maxNumHands,
+        currentDelegate: currentDelegate,
+        runningMode: runningMode,
+        onHandDetected: onHandDetected
+    );
+  }
+
   Future<void> clearHandLandmarker() async {
     await HandLandmarkerMediapipePlatform.instance.clearHandLandmarker();
   }
@@ -32,7 +52,7 @@ class HandLandmarkerMediapipe {
     );
   }
 
-  Future<List<HandLandmark>?> detectVideoFile({
+  Future<List<Hand>?> detectVideoFile({
     required XFile videoFile,
     required int inferenceIntervalMs
   }) async {
@@ -41,7 +61,7 @@ class HandLandmarkerMediapipe {
     );
   }
 
-  Future<List<HandLandmark>?> detectImage({
+  Future<List<Hand>?> detectImage({
     required Uint8List imageData,
     required int width,
     required int height

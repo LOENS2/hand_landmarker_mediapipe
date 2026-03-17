@@ -152,9 +152,10 @@ class HandLandmarkerMediapipePlugin :
     }
 
     private fun resultBundleToList(resultBundle: HandLandmarkerHelper.ResultBundle?):
-            MutableList<HashMap<String, Double>> {
-        val landmarkList: MutableList<HashMap<String, Double>> = mutableListOf()
+            MutableList<MutableList<HashMap<String, Double>>> {
+        val handList: MutableList<MutableList<HashMap<String, Double>>> = mutableListOf()
         resultBundle?.results?.forEach { handResult ->
+            val landmarkList: MutableList<HashMap<String, Double>> = mutableListOf()
             handResult.landmarks().forEach { landmarks ->
                 landmarks.forEach { landmark ->
                     landmarkList.add(
@@ -166,7 +167,8 @@ class HandLandmarkerMediapipePlugin :
                     )
                 }
             }
+            handList.add(landmarkList)
         }
-        return landmarkList
+        return handList
     }
 }

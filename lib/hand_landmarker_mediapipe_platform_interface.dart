@@ -25,7 +25,7 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    required Future<void> Function(List<HandLandmark>? handLandmarks) onHandDetected
+    required Future<void> Function(List<Hand>? hands) onHandDetected
   }) async {
     throw UnimplementedError('init() has not been implemented.');
   }
@@ -49,14 +49,14 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     throw UnimplementedError('detectLiveStream() has not been implemented.');
   }
 
-  Future<List<HandLandmark>?> detectVideoFile({
+  Future<List<Hand>?> detectVideoFile({
     required XFile videoFile,
     required int inferenceIntervalMs
   }) async {
     throw UnimplementedError('detectVideoFile() has not been implemented.');
   }
 
-  Future<List<HandLandmark>?> detectImage({
+  Future<List<Hand>?> detectImage({
     required Uint8List imageData,
     required int width,
     required int height
@@ -75,6 +75,12 @@ class HandLandmark {
     required this.y,
     required this.z
   });
+}
+
+class Hand {
+  final List<HandLandmark> landmarks;
+
+  Hand({required this.landmarks});
 }
 
 enum RunningMode {

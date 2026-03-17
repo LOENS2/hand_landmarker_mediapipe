@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +12,7 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
   @visibleForTesting
   final methodChannel = const MethodChannel('hand_landmarker_mediapipe');
   late final Future<void>
-    Function(List<HandLandmark>? handLandmarks) _onHandDetected;
+    Function(List<Hand>? handLandmarks) _onHandDetected;
 
   @override
   Future<void> init({
@@ -21,18 +22,20 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    required Future<void> Function(List<HandLandmark>? handLandmarks) onHandDetected
+    required Future<void> Function(List<Hand>? hands) onHandDetected
   }) async {
     _onHandDetected = onHandDetected;
     await setupHandLandmarker();
+    await _setupNativeCallbacks();
   }
 
-  Future<void> setupNativeCallbacks() async {
+  Future<void> _setupNativeCallbacks() async {
     methodChannel.setMethodCallHandler((call) async {
       switch (call.method) {
         case 'onLandmarkResults':
           final args = Map<String, dynamic>.from(call.arguments as Map);
-          final landmarks = (args['landmarks'] as List).cast<Map<String, double>>();
+          final landmarks = (args['landmarks'] as List)
+              .cast<List<Map<String, double>>>();
           await _onLandmarkResults(landmarks);
           return;
         case 'onLandmarkError':
@@ -47,18 +50,9 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     });
   }
 
-  Future<void> _onLandmarkResults(List<Map<String, double>> results) async {
-    List<HandLandmark>? handLandmarks;
-    for (var result in results) {
-      handLandmarks!.add(
-        HandLandmark(
-          x: result['x']!,
-          y: result['y']!,
-          z: result['z']!)
-      );
-    }
-
-    await _onHandDetected(handLandmarks);
+  Future<void> _onLandmarkResults(List<List<Map<String, double>>> results) async {
+    var hands = await _resultToHandList(results);
+    await _onHandDetected(hands!);
   }
 
   Future<void> _onLandmarkError(String message, int code) async {
@@ -97,24 +91,43 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
   }
 
   @override
-  Future<List<HandLandmark>?> detectVideoFile({
+  Future<List<Hand>?> detectVideoFile({
     required XFile videoFile,
     required int inferenceIntervalMs
   }) async {
     final result = await methodChannel
-        .invokeListMethod<HandLandmark>('detectVideoFile');
-    return result;
+        .invokeListMethod<List<Map<String, double>>>('detectVideoFile');
+    return await _resultToHandList(result!);
   }
 
   @override
-  Future<List<HandLandmark>?> detectImage({
+  Future<List<Hand>?> detectImage({
     required Uint8List imageData,
     required int width,
     required int height
   }) async {
     final result = await methodChannel
-        .invokeListMethod<HandLandmark>('detectImage', imageData);
+        .invokeListMethod<List<Map<String, double>>>('detectImage', imageData);
 
-    return result;
+    return await _resultToHandList(result!);
+  }
+
+  Future<List<Hand>?> _resultToHandList(
+    List<List<Map<String, double>>> results
+  ) async {
+    List<Hand>? hands;
+    for (var handResult in results) {
+      List<HandLandmark>? tempLandmarks;
+      for (var landmark in handResult) {
+        tempLandmarks!.add(
+            HandLandmark(
+                x: landmark['x']!,
+                y: landmark['y']!,
+                z: landmark['z']!)
+        );
+      }
+      hands!.add(Hand(landmarks: tempLandmarks!));
+    }
+    return hands;
   }
 }
