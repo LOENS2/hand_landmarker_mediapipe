@@ -25,7 +25,7 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    required Future<void> Function(List<Hand>? hands) onHandDetected
+    Future<void> Function(List<Hand>? hands)? onHandDetected
   }) async {
     throw UnimplementedError('init() has not been implemented.');
   }

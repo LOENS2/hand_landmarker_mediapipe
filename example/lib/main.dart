@@ -55,7 +55,7 @@ class _HandTrackerViewState extends State<HandTrackerView> {
 
   Future<void> _initialize() async {
     final camera = _cameras.firstWhere(
-          (cam) => cam.lensDirection == CameraLensDirection.front,
+          (cam) => cam.lensDirection == CameraLensDirection.back,
       orElse: () => _cameras.first,
     );
     _controller = CameraController(

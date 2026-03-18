@@ -10,8 +10,8 @@ import 'hand_landmarker_mediapipe_platform_interface.dart';
 class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('hand_landmarker_mediapipe');
-  late final Future<void>
-    Function(List<Hand>? handLandmarks) _onHandDetected;
+  late final Future<void>?
+    Function(List<Hand> handLandmarks)? _onHandDetected;
 
   @override
   Future<void> init({
@@ -21,7 +21,7 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    required Future<void> Function(List<Hand>? hands) onHandDetected
+    Future<void> Function(List<Hand>? hands)? onHandDetected
   }) async {
     _onHandDetected = onHandDetected;
     await _setupNativeCallbacks();
@@ -62,7 +62,8 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
 
   Future<void> _onLandmarkResults(List<List<Map<String, double>>> results) async {
     var hands = await _resultToHandList(results);
-    await _onHandDetected(hands!);
+    log("##################### RESULTS!");
+    await _onHandDetected!(hands!);
   }
 
   Future<void> _onLandmarkError(String message, int code) async {
@@ -117,7 +118,12 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required int height
   }) async {
     final result = await methodChannel
-        .invokeListMethod<List<Map<String, double>>>('detectImage', imageData);
+      .invokeListMethod<List<Map<String, double>>>(
+      'detectImage',
+      <String, Object> {
+        'imageData': imageData
+      }
+    );
 
     return await _resultToHandList(result!);
   }
