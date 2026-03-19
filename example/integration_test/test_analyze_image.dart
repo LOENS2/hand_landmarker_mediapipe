@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe.dart';
 import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe_platform_interface.dart';
@@ -10,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> main() async {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Test Rotation Prediction', (WidgetTester tester) async {
+  testWidgets('Test Hand Landmarking with image', (WidgetTester tester) async {
     var handLandmarker = HandLandmarkerMediapipe(
       minHandDetectionConfidence:
         HandLandmarkerMediapipe.defaultHandDetectionConfidence,
@@ -29,15 +26,13 @@ Future<void> main() async {
 
     var results = await handLandmarker.detectImage(
       imageData: testImageBytes.buffer.asUint8List(),
-      width: 1600,
-      height: 1637
     );
 
     expect(results != null, true);
 
     for (var hand in results!) {
       for (var landmark in hand.landmarks) {
-        log("x: ${landmark.x}, y: ${landmark.y}, z: ${landmark.z}");
+        print("x: ${landmark.x}, y: ${landmark.y}, z: ${landmark.z}");
       }
     }
   });

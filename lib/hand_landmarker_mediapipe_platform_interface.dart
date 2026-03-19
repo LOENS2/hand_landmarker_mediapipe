@@ -58,8 +58,6 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
 
   Future<List<Hand>?> detectImage({
     required Uint8List imageData,
-    required int width,
-    required int height
   }) async {
     throw UnimplementedError('detectImage() has not been implemented.');
   }

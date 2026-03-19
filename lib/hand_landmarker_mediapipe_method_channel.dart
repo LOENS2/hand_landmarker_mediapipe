@@ -114,35 +114,35 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
   @override
   Future<List<Hand>?> detectImage({
     required Uint8List imageData,
-    required int width,
-    required int height
   }) async {
     final result = await methodChannel
-      .invokeListMethod<List<Map<String, double>>>(
+      .invokeListMethod<List<dynamic>>(
       'detectImage',
       <String, Object> {
-        'imageData': imageData
+        'imageData': imageData,
       }
     );
 
-    return await _resultToHandList(result!);
+    return await _resultToHandList(result);
   }
 
   Future<List<Hand>?> _resultToHandList(
-    List<List<Map<String, double>>> results
+    List<dynamic>? results
   ) async {
-    List<Hand>? hands;
+    if (results == null) return null;
+
+    List<Hand> hands = [];
     for (var handResult in results) {
-      List<HandLandmark>? tempLandmarks;
-      for (var landmark in handResult) {
-        tempLandmarks!.add(
+      List<HandLandmark> tempLandmarks = [];
+      for (var landmark in handResult as List<dynamic>) {
+        tempLandmarks.add(
             HandLandmark(
                 x: landmark['x']!,
                 y: landmark['y']!,
                 z: landmark['z']!)
         );
       }
-      hands!.add(Hand(landmarks: tempLandmarks!));
+      hands.add(Hand(landmarks: tempLandmarks));
     }
     return hands;
   }

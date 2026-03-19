@@ -74,13 +74,9 @@ class HandLandmarkerMediapipe {
 
   Future<List<Hand>?> detectImage({
     required Uint8List imageData,
-    required int width,
-    required int height
   }) async {
     return await HandLandmarkerMediapipePlatform.instance.detectImage(
       imageData: imageData,
-      width: width,
-      height: height
     );
   }
 }

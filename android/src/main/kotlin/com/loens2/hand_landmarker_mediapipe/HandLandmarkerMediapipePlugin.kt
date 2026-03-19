@@ -2,6 +2,7 @@ package com.loens2.hand_landmarker_mediapipe
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Handler
@@ -160,20 +161,19 @@ class HandLandmarkerMediapipePlugin :
             }
 
             "detectImage" -> {
+                // Fetch and decode the image first
                 val imageData = call.argument<ByteArray>("imageData") ?: byteArrayOf()
-                val height = call.argument<Int>("height") ?: 0
-                val width = call.argument<Int>("width") ?: 0
-                val imageBitmap = createBitmap(width, height)
-                val buffer = ByteBuffer.allocate(imageData.size)
-                for (item in imageData) {
-                    buffer.put(item)
-                }
-                imageBitmap.copyPixelsFromBuffer(buffer)
+                val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+
+                // Run the landmarking process on the image.
                 val data = handLandmankerHelper?.detectImage(imageBitmap)
                 val landmarkList = resultBundleToList(data)
+
+                // Return the result to flutter
                 result.success(landmarkList)
             }
 
+            // This is just to prevent the stupidity of any programmers working on the Flutter side.
             else -> result.notImplemented()
         }
     }
