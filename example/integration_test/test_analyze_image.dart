@@ -16,7 +16,7 @@ Future<void> main() async {
       minHandPresenceConfidence:
         HandLandmarkerMediapipe.defaultHandPresenceConfidence,
       maxNumHands: HandLandmarkerMediapipe.defaultNumHands,
-      currentDelegate: Delegate.cpu,
+      currentDelegate: Delegate.gpu,
       runningMode: RunningMode.image,
     );
 

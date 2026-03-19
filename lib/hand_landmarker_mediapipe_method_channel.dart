@@ -11,7 +11,7 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
   @visibleForTesting
   final methodChannel = const MethodChannel('hand_landmarker_mediapipe');
   late final Future<void>?
-    Function(List<Hand> handLandmarks)? _onHandDetected;
+    Function(List<Hand>? handLandmarks)? _onHandDetected;
 
   @override
   Future<void> init({
@@ -44,8 +44,7 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
       switch (call.method) {
         case 'onLandmarkResults':
           final args = Map<String, dynamic>.from(call.arguments as Map);
-          final landmarks = (args['landmarks'] as List)
-              .cast<List<Map<String, double>>>();
+          final landmarks = (args['landmarks'] as List<dynamic>);
           await _onLandmarkResults(landmarks);
           return;
         case 'onLandmarkError':
@@ -60,10 +59,10 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     });
   }
 
-  Future<void> _onLandmarkResults(List<List<Map<String, double>>> results) async {
+  Future<void> _onLandmarkResults(List<dynamic> results) async {
     var hands = await _resultToHandList(results);
     log("##################### RESULTS!");
-    await _onHandDetected!(hands!);
+    await _onHandDetected!(hands);
   }
 
   Future<void> _onLandmarkError(String message, int code) async {
@@ -107,8 +106,8 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required int inferenceIntervalMs
   }) async {
     final result = await methodChannel
-        .invokeListMethod<List<Map<String, double>>>('detectVideoFile');
-    return await _resultToHandList(result!);
+        .invokeListMethod<List<dynamic>>('detectVideoFile');
+    return await _resultToHandList(result);
   }
 
   @override

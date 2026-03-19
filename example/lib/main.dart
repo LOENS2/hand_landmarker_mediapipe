@@ -40,8 +40,6 @@ class _HandTrackerViewState extends State<HandTrackerView> {
   CameraController? _controller;
   // The plugin instance that will handle all the heavy lifting.
   HandLandmarkerMediapipe? _plugin;
-  // The results from the plugin will be stored in this list.
-  List<Hand> _hands = [];
   // A flag to show a loading indicator while the camera and plugin are initializing.
   bool _isInitialized = false;
   // A guard to prevent processing multiple frames at once.
@@ -66,10 +64,13 @@ class _HandTrackerViewState extends State<HandTrackerView> {
 
     // Create an instance of our plugin with custom options.
     _plugin = HandLandmarkerMediapipe(
-      minHandDetectionConfidence: 0.5,
-      minHandTrackingConfidence: 0.5,
-      minHandPresenceConfidence: 0.5,
-      maxNumHands: 2,
+      minHandDetectionConfidence:
+      HandLandmarkerMediapipe.defaultHandDetectionConfidence,
+      minHandTrackingConfidence:
+      HandLandmarkerMediapipe.defaultHandTrackingConfidence,
+      minHandPresenceConfidence:
+      HandLandmarkerMediapipe.defaultHandPresenceConfidence,
+      maxNumHands: HandLandmarkerMediapipe.defaultNumHands,
       currentDelegate: Delegate.cpu,
       runningMode: RunningMode.liveStream,
       onHandDetected: _onHandDetected
