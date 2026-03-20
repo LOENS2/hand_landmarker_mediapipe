@@ -3,6 +3,8 @@ package com.loens2.hand_landmarker_mediapipe
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.graphics.Rect
 import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Handler
@@ -17,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import com.loens2.hand_landmarker_mediapipe.hand_landmarker.HandLandmarkerHelper
 import java.nio.ByteBuffer
 import androidx.core.net.toUri
+import java.io.ByteArrayOutputStream
 import kotlin.math.roundToInt
 
 /** HandLandmarkerMediapipePlugin */
@@ -113,9 +116,9 @@ class HandLandmarkerMediapipePlugin :
 
             "detectLiveStream" -> {
                 val imageDataMap = call.argument<HashMap<String, Any>>("imageData")
-                val planes = imageDataMap?.get("planes") as? List<HashMap<String, Any>>
+                val imageRaw = imageDataMap?.get("plane") as ByteArray?
 
-                if (planes == null) {
+                if (imageRaw == null) {
                     result.error(
                         "INVALID_DATA",
                         "The the planes cannot be null.",
@@ -124,23 +127,11 @@ class HandLandmarkerMediapipePlugin :
                     return
                 }
 
-                if (planes.size != 3) {
-                    result.error(
-                        "INVALID_DATA_SIZE",
-                        "The size of the planes list is incorrect.",
-                        null
-                    )
-                    return
-                }
-
                 val width = imageDataMap["width"] as Int
                 val height = imageDataMap["height"] as Int
 
-                val yPlane = parsePlane(planes[0])
-                val uPlane = parsePlane(planes[1])
-                val vPlane = parsePlane(planes[2])
-
-                val bitmap = yuv420ToBitmap(width, height, yPlane, uPlane, vPlane)
+                val bitmap = nv21ToBitmap(imageRaw, width, height)
+                    ?: throw Exception("Failed to decode NV21 image")
 
                 val isFrontCamera = call.argument<Boolean>("isFrontCamera")
                 handLandmankerHelper?.detectLiveStream(bitmap, isFrontCamera ?: false)
@@ -203,106 +194,12 @@ class HandLandmarkerMediapipePlugin :
         return handList
     }
 
-    data class FlutterPlane(
-        val bytes: ByteArray,
-        val bytesPerRow: Int,
-        val bytesPerPixel: Int?
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as FlutterPlane
-
-            if (bytesPerRow != other.bytesPerRow) return false
-            if (bytesPerPixel != other.bytesPerPixel) return false
-            if (!bytes.contentEquals(other.bytes)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = bytesPerRow
-            result = 31 * result + (bytesPerPixel ?: 0)
-            result = 31 * result + bytes.contentHashCode()
-            return result
-        }
-    }
-
-    fun yuv420ToArgb8888(
-        width: Int,
-        height: Int,
-        yPlane: FlutterPlane,
-        uPlane: FlutterPlane,
-        vPlane: FlutterPlane
-    ): IntArray {
-        val out = IntArray(width * height)
-
-        val yBytes = yPlane.bytes
-        val uBytes = uPlane.bytes
-        val vBytes = vPlane.bytes
-
-        val yRowStride = yPlane.bytesPerRow
-        val uRowStride = uPlane.bytesPerRow
-        val vRowStride = vPlane.bytesPerRow
-
-        val uPixelStride = uPlane.bytesPerPixel ?: 1
-        val vPixelStride = vPlane.bytesPerPixel ?: 1
-
-        for (y in 0 until height) {
-            val yRow = y * yRowStride
-            val uvRow = (y / 2)
-
-            for (x in 0 until width) {
-                val yIndex = yRow + x
-
-                val uvX = x / 2
-                val uIndex = uvRow * uRowStride + uvX * uPixelStride
-                val vIndex = uvRow * vRowStride + uvX * vPixelStride
-
-                val yValue = yBytes[yIndex].toInt() and 0xFF
-                val uValue = uBytes[uIndex].toInt() and 0xFF
-                val vValue = vBytes[vIndex].toInt() and 0xFF
-
-                val yf = yValue.toFloat()
-                val uf = (uValue - 128).toFloat()
-                val vf = (vValue - 128).toFloat()
-
-                var r = (yf + 1.402f * vf).roundToInt()
-                var g = (yf - 0.344136f * uf - 0.714136f * vf).roundToInt()
-                var b = (yf + 1.772f * uf).roundToInt()
-
-                r = r.coerceIn(0, 255)
-                g = g.coerceIn(0, 255)
-                b = b.coerceIn(0, 255)
-
-                out[y * width + x] =
-                    (0xFF shl 24) or
-                            (r shl 16) or
-                            (g shl 8) or
-                            b
-            }
-        }
-
-        return out
-    }
-
-    fun yuv420ToBitmap(
-        width: Int,
-        height: Int,
-        yPlane: FlutterPlane,
-        uPlane: FlutterPlane,
-        vPlane: FlutterPlane
-    ): Bitmap {
-        val argb = yuv420ToArgb8888(width, height, yPlane, uPlane, vPlane)
-        return Bitmap.createBitmap(argb, width, height, Bitmap.Config.ARGB_8888)
-    }
-
-    fun parsePlane(map: Map<String, Any>): FlutterPlane {
-        return FlutterPlane(
-            bytes = map["bytes"] as ByteArray,
-            bytesPerRow = map["bytesPerRow"] as Int,
-            bytesPerPixel = map["bytesPerPixel"] as? Int
-        )
+    private fun nv21ToBitmap(imageData: ByteArray, width: Int, height: Int): Bitmap? {
+        // This conversion from NV21 to an RGBA bitmop is awful, but it works.
+        val yuvImage = YuvImage(imageData, ImageFormat.NV21, width, height, null)
+        val out = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, width, height), 90, out)
+        val imageBytes = out.toByteArray()
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 }

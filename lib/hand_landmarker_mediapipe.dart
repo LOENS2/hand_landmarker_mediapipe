@@ -50,11 +50,7 @@ class HandLandmarkerMediapipe {
     final imageData = {
       'width': cameraImage.width,
       'height': cameraImage.height,
-      'planes': cameraImage.planes.map((p) => {
-        'bytes': p.bytes,
-        'bytesPerRow': p.bytesPerRow,
-        'bytesPerPixel': p.bytesPerPixel,
-      }).toList(),
+      'plane': cameraImage.planes.first.bytes
     };
 
     await HandLandmarkerMediapipePlatform.instance.detectLiveStream(

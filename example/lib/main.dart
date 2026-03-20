@@ -60,6 +60,7 @@ class _HandTrackerViewState extends State<HandTrackerView> {
       camera,
       ResolutionPreset.medium,
       enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.nv21
     );
 
     // Create an instance of our plugin with custom options.
