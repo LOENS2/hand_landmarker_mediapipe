@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // Import the plugin's main class.
 import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe.dart';
-import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe_method_channel.dart';
-import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe_platform_interface.dart';
 
 late List<CameraDescription> _cameras;
 
@@ -104,7 +102,8 @@ class _HandTrackerViewState extends State<HandTrackerView> {
       // The detect method is now synchronous (not async).
       await _plugin!.detectLiveStream(
         cameraImage: image,
-        isFrontCamera: false
+        isFrontCamera:
+          _controller?.description.lensDirection == CameraLensDirection.front
       );
     } catch (e) {
       debugPrint('Error detecting landmarks: $e');
