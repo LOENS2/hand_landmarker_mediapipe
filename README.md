@@ -44,7 +44,7 @@ var results = await handLandmarker.detectImage(
 <details>
   <summary>detectVideoFile()</summary>
 
-You can pass a XFile of thi video as well as the inference intorval to the `detectVideoFile()` method.\
+You can pass a XFile of the video as well as the inference intorval to the `detectVideoFile()` method.\
 Be sure to set the `runningMode` to `RunningMode.video`.\
 The method returns a `List<Hand>` object.
 ```dart
