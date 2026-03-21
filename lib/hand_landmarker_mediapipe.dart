@@ -10,7 +10,7 @@ class HandLandmarkerMediapipe {
   static const defaultHandTrackingConfidence = 0.5;
   static const defaultHandPresenceConfidence = 0.5;
   static const defaultNumHands = 2;
-  
+
   HandLandmarkerMediapipe({
     required double minHandDetectionConfidence,
     required double minHandTrackingConfidence,
@@ -18,16 +18,16 @@ class HandLandmarkerMediapipe {
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    Future<void> Function(List<Hand>? hands)? onHandDetected
+    Future<void> Function(List<Hand>? hands)? onHandDetected,
   }) {
     HandLandmarkerMediapipePlatform.instance.init(
-        minHandDetectionConfidence: minHandDetectionConfidence,
-        minHandTrackingConfidence: minHandTrackingConfidence,
-        minHandPresenceConfidence: minHandPresenceConfidence,
-        maxNumHands: maxNumHands,
-        currentDelegate: currentDelegate,
-        runningMode: runningMode,
-        onHandDetected: onHandDetected
+      minHandDetectionConfidence: minHandDetectionConfidence,
+      minHandTrackingConfidence: minHandTrackingConfidence,
+      minHandPresenceConfidence: minHandPresenceConfidence,
+      maxNumHands: maxNumHands,
+      currentDelegate: currentDelegate,
+      runningMode: runningMode,
+      onHandDetected: onHandDetected,
     );
   }
 
@@ -45,32 +45,31 @@ class HandLandmarkerMediapipe {
 
   Future<void> detectLiveStream({
     required CameraImage cameraImage,
-    required bool isFrontCamera
+    required bool isFrontCamera,
   }) async {
     final imageData = {
       'width': cameraImage.width,
       'height': cameraImage.height,
-      'plane': cameraImage.planes.first.bytes
+      'plane': cameraImage.planes.first.bytes,
     };
 
     await HandLandmarkerMediapipePlatform.instance.detectLiveStream(
-        imageData: imageData,
-        isFrontCamera: isFrontCamera
+      imageData: imageData,
+      isFrontCamera: isFrontCamera,
     );
   }
 
   Future<List<Hand>?> detectVideoFile({
     required XFile videoFile,
-    required int inferenceIntervalMs
+    required int inferenceIntervalMs,
   }) async {
     return await HandLandmarkerMediapipePlatform.instance.detectVideoFile(
-        videoFile: videoFile, inferenceIntervalMs: inferenceIntervalMs
+      videoFile: videoFile,
+      inferenceIntervalMs: inferenceIntervalMs,
     );
   }
 
-  Future<List<Hand>?> detectImage({
-    required Uint8List imageData,
-  }) async {
+  Future<List<Hand>?> detectImage({required Uint8List imageData}) async {
     return await HandLandmarkerMediapipePlatform.instance.detectImage(
       imageData: imageData,
     );

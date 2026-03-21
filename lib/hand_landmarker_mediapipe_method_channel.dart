@@ -6,12 +6,11 @@ import 'package:flutter/services.dart';
 
 import 'hand_landmarker_mediapipe_platform_interface.dart';
 
-
-class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatform {
+class MethodChannelHandLandmarkerMediapipe
+    extends HandLandmarkerMediapipePlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('hand_landmarker_mediapipe');
-  late final Future<void>?
-    Function(List<Hand>? handLandmarks)? _onHandDetected;
+  late final Future<void>? Function(List<Hand>? handLandmarks)? _onHandDetected;
 
   @override
   Future<void> init({
@@ -21,21 +20,18 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    Future<void> Function(List<Hand>? hands)? onHandDetected
+    Future<void> Function(List<Hand>? hands)? onHandDetected,
   }) async {
     _onHandDetected = onHandDetected;
     await _setupNativeCallbacks();
-    await methodChannel.invokeMethod(
-      'initialize',
-      <String, Object>{
-        'minHandDetectionConfidence': minHandDetectionConfidence,
-        'minHandTrackingConfidence': minHandTrackingConfidence,
-        'minHandPresenceConfidence': minHandPresenceConfidence,
-        'maxNumHands': maxNumHands,
-        'currentDelegate': currentDelegate.index,
-        'runningMode': runningMode.index
-      }
-    );
+    await methodChannel.invokeMethod('initialize', <String, Object>{
+      'minHandDetectionConfidence': minHandDetectionConfidence,
+      'minHandTrackingConfidence': minHandTrackingConfidence,
+      'minHandPresenceConfidence': minHandPresenceConfidence,
+      'maxNumHands': maxNumHands,
+      'currentDelegate': currentDelegate.index,
+      'runningMode': runningMode.index,
+    });
     await setupHandLandmarker();
   }
 
@@ -65,8 +61,10 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
   }
 
   Future<void> _onLandmarkError(String message, int code) async {
-    log("An error orcurred while processing the landmarking:"
-        " ${message}; ${code}");
+    log(
+      "An error orcurred while processing the landmarking:"
+      " ${message}; ${code}",
+    );
   }
 
   @override
@@ -88,45 +86,36 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
   @override
   Future<void> detectLiveStream({
     required Map<String, Object> imageData,
-    required bool isFrontCamera
+    required bool isFrontCamera,
   }) async {
-    await methodChannel.invokeMethod(
-      'detectLiveStream',
-      <String, Object>{
-        'imageData': imageData,
-        'isFrontCamera': isFrontCamera,
-      },
-    );
+    await methodChannel.invokeMethod('detectLiveStream', <String, Object>{
+      'imageData': imageData,
+      'isFrontCamera': isFrontCamera,
+    });
   }
 
   @override
   Future<List<Hand>?> detectVideoFile({
     required XFile videoFile,
-    required int inferenceIntervalMs
+    required int inferenceIntervalMs,
   }) async {
-    final result = await methodChannel
-        .invokeListMethod<List<dynamic>>('detectVideoFile');
+    final result = await methodChannel.invokeListMethod<List<dynamic>>(
+      'detectVideoFile',
+    );
     return await _resultToHandList(result);
   }
 
   @override
-  Future<List<Hand>?> detectImage({
-    required Uint8List imageData,
-  }) async {
-    final result = await methodChannel
-      .invokeListMethod<List<dynamic>>(
+  Future<List<Hand>?> detectImage({required Uint8List imageData}) async {
+    final result = await methodChannel.invokeListMethod<List<dynamic>>(
       'detectImage',
-      <String, Object> {
-        'imageData': imageData,
-      }
+      <String, Object>{'imageData': imageData},
     );
 
     return await _resultToHandList(result);
   }
 
-  Future<List<Hand>?> _resultToHandList(
-    List<dynamic>? results
-  ) async {
+  Future<List<Hand>?> _resultToHandList(List<dynamic>? results) async {
     if (results == null) return null;
 
     List<Hand> hands = [];
@@ -134,10 +123,7 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
       List<HandLandmark> tempLandmarks = [];
       for (var landmark in handResult as List<dynamic>) {
         tempLandmarks.add(
-            HandLandmark(
-                x: landmark['x']!,
-                y: landmark['y']!,
-                z: landmark['z']!)
+          HandLandmark(x: landmark['x']!, y: landmark['y']!, z: landmark['z']!),
         );
       }
       hands.add(Hand(landmarks: tempLandmarks));

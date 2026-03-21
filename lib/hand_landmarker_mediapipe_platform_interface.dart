@@ -9,7 +9,8 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static HandLandmarkerMediapipePlatform _instance = MethodChannelHandLandmarkerMediapipe();
+  static HandLandmarkerMediapipePlatform _instance =
+      MethodChannelHandLandmarkerMediapipe();
 
   static HandLandmarkerMediapipePlatform get instance => _instance;
 
@@ -25,7 +26,7 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     required int maxNumHands,
     required Delegate currentDelegate,
     required RunningMode runningMode,
-    Future<void> Function(List<Hand>? hands)? onHandDetected
+    Future<void> Function(List<Hand>? hands)? onHandDetected,
   }) async {
     throw UnimplementedError('init() has not been implemented.');
   }
@@ -44,21 +45,19 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
 
   Future<void> detectLiveStream({
     required Map<String, Object> imageData,
-    required bool isFrontCamera
+    required bool isFrontCamera,
   }) async {
     throw UnimplementedError('detectLiveStream() has not been implemented.');
   }
 
   Future<List<Hand>?> detectVideoFile({
     required XFile videoFile,
-    required int inferenceIntervalMs
+    required int inferenceIntervalMs,
   }) async {
     throw UnimplementedError('detectVideoFile() has not been implemented.');
   }
 
-  Future<List<Hand>?> detectImage({
-    required Uint8List imageData,
-  }) async {
+  Future<List<Hand>?> detectImage({required Uint8List imageData}) async {
     throw UnimplementedError('detectImage() has not been implemented.');
   }
 }
@@ -68,11 +67,7 @@ class HandLandmark {
   final double y;
   final double z;
 
-  HandLandmark({
-    required this.x,
-    required this.y,
-    required this.z
-  });
+  HandLandmark({required this.x, required this.y, required this.z});
 }
 
 class Hand {
@@ -81,13 +76,6 @@ class Hand {
   Hand({required this.landmarks});
 }
 
-enum RunningMode {
-  image,
-  video,
-  liveStream
-}
+enum RunningMode { image, video, liveStream }
 
-enum Delegate {
-  cpu,
-  gpu
-}
+enum Delegate { cpu, gpu }
