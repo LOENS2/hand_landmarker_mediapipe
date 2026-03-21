@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'dart:typed_data';
 
 import 'hand_landmarker_mediapipe_method_channel.dart';
+import 'hand_landmarker_mediapipe.dart';
 
 abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
   HandLandmarkerMediapipePlatform() : super(token: _token);
@@ -61,21 +62,3 @@ abstract class HandLandmarkerMediapipePlatform extends PlatformInterface {
     throw UnimplementedError('detectImage() has not been implemented.');
   }
 }
-
-class HandLandmark {
-  final double x;
-  final double y;
-  final double z;
-
-  HandLandmark({required this.x, required this.y, required this.z});
-}
-
-class Hand {
-  final List<HandLandmark> landmarks;
-
-  Hand({required this.landmarks});
-}
-
-enum RunningMode { image, video, liveStream }
-
-enum Delegate { cpu, gpu }

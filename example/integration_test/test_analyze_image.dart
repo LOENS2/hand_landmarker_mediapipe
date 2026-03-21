@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe.dart';
-import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 

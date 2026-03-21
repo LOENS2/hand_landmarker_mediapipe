@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'hand_landmarker_mediapipe_platform_interface.dart';
+import 'hand_landmarker_mediapipe.dart';
 
 class MethodChannelHandLandmarkerMediapipe
     extends HandLandmarkerMediapipePlatform {
@@ -63,7 +64,7 @@ class MethodChannelHandLandmarkerMediapipe
   Future<void> _onLandmarkError(String message, int code) async {
     log(
       "An error orcurred while processing the landmarking:"
-      " ${message}; ${code}",
+      " $message; $code",
     );
   }
 

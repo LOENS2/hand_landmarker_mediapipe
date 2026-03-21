@@ -75,3 +75,21 @@ class HandLandmarkerMediapipe {
     );
   }
 }
+
+class HandLandmark {
+  final double x;
+  final double y;
+  final double z;
+
+  HandLandmark({required this.x, required this.y, required this.z});
+}
+
+class Hand {
+  final List<HandLandmark> landmarks;
+
+  Hand({required this.landmarks});
+}
+
+enum RunningMode { image, video, liveStream }
+
+enum Delegate { cpu, gpu }
