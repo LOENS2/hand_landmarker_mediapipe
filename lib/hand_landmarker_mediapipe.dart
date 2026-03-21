@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 
@@ -47,6 +48,14 @@ class HandLandmarkerMediapipe {
     required CameraImage cameraImage,
     required bool isFrontCamera,
   }) async {
+    if (Platform.isAndroid &&
+        cameraImage.format.group != ImageFormatGroup.nv21) {
+      throw Exception(
+        "Wrong ImageFormatGroup! "
+        "The image stream has to be NV21 encoded on Android!",
+      );
+    }
+
     final imageData = {
       'width': cameraImage.width,
       'height': cameraImage.height,
