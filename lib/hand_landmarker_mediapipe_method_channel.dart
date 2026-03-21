@@ -61,7 +61,6 @@ class MethodChannelHandLandmarkerMediapipe extends HandLandmarkerMediapipePlatfo
 
   Future<void> _onLandmarkResults(List<dynamic> results) async {
     var hands = await _resultToHandList(results);
-    log("##################### RESULTS!");
     await _onHandDetected!(hands);
   }
 
