@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hand_landmarker_mediapipe/hand_landmark_painter.dart';
 // Import the plugin's main class.
 import 'package:hand_landmarker_mediapipe/hand_landmarker_mediapipe.dart';
 
@@ -42,6 +43,10 @@ class _HandTrackerViewState extends State<HandTrackerView> {
   bool _isInitialized = false;
   // A guard to prevent processing multiple frames at once.
   bool _isDetecting = false;
+  // A landmark notifier to update the painter when new values are present.
+  final ValueNotifier<List<Hand>> _handNotifier = ValueNotifier(
+    List.empty()
+  );
 
   @override
   void initState() {
@@ -90,6 +95,8 @@ class _HandTrackerViewState extends State<HandTrackerView> {
     // Stop the image stream and dispose of the controller.
     _controller?.stopImageStream();
     _controller?.dispose();
+
+    _plugin?.clearHandLandmarker();
     super.dispose();
   }
 
@@ -114,12 +121,17 @@ class _HandTrackerViewState extends State<HandTrackerView> {
   }
 
   Future<void> _onHandDetected(List<Hand>? hands) async {
-    log("Landmarks");
+    if (hands != null && hands.isNotEmpty) {
+      _handNotifier.value = hands;
+      log("Landmarks");
+    }
+    /*
     for (var hand in hands!) {
       for (var landmark in hand.landmarks) {
         log("x: ${landmark.x}, y: ${landmark.y}, z: ${landmark.z}");
       }
     }
+    */
   }
 
   @override
@@ -132,11 +144,26 @@ class _HandTrackerViewState extends State<HandTrackerView> {
     final controller = _controller!;
     final previewSize = controller.value.previewSize!;
     final previewAspectRatio = previewSize.height / previewSize.width;
+    final lensDirection = controller.description.lensDirection;
+    final sensorOrientation = controller.description.sensorOrientation;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Live Hand Tracking')),
       body: Center(
-        child: CameraPreview(controller)
+        child: Stack(
+          children: [
+            CameraPreview(controller),
+            CustomPaint(
+              size: Size.infinite,
+              painter: LandmarkPainter(
+                handsNotifier: _handNotifier,
+                previewSize: previewSize,
+                lensDirection: lensDirection,
+                sensorOrientation: sensorOrientation
+              ),
+            )
+          ],
+        )
       )
     );
   }
