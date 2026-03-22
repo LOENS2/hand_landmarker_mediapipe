@@ -18,16 +18,17 @@ public class HandLandmarkerMediapipePlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            let minHandDetectionConfidence = (args["minHandDetectionConfidence"] as? NSNumber)?.doubleValue ??
+            let minHandDetectionConfidence = (args["minHandDetectionConfidence"] as? NSNumber)?.floatValue ??
                 InferenceConfigurationManager.sharedInstance.minHandDetectionConfidence
-            let minHandTrackingConfidence = (args["minHandTrackingConfidence"] as? NSNumber)?.doubleValue ?? InferenceConfigurationManager.sharedInstance.minHandTrackingConfidence
-            let minHandPresenceConfidence = (args["minHandPresenceConfidence"] as? NSNumber)?.doubleValue ??
+            let minHandTrackingConfidence = (args["minHandTrackingConfidence"] as? NSNumber)?.floatValue ??
+                InferenceConfigurationManager.sharedInstance.minTrackingConfidence
+            let minHandPresenceConfidence = (args["minHandPresenceConfidence"] as? NSNumber)?.floatValue ??
                 InferenceConfigurationManager.sharedInstance.minHandPresenceConfidence
             let maxNumHands = (args["maxNumHands"] as? NSNumber)?.intValue ??
                 InferenceConfigurationManager.sharedInstance.numHands
             let currentDelegate = HandLandmarkerDelegate(
-                index: <#T##Int#>(args["currentDelegate"] as? NSNumber)?.intValue
-                )? ??
+                index: (args["currentDelegate"] as? NSNumber)?.intValue ?? 0,
+                ) ??
                 InferenceConfigurationManager.sharedInstance.delegate
             let runningMode = (args["runningMode"] as? NSNumber)?.intValue ?? 0
 
@@ -62,24 +63,19 @@ public class HandLandmarkerMediapipePlugin: NSObject, FlutterPlugin {
                         liveStreamDelegate: self,
                         delegate: currentDelegate
                     )
-                }
             default:
-                result(FlutterError(code: "BAD_RUNNING_MODE", message: "Invalid running mode index", details: nil)))
+                result(FlutterError(code: "BAD_RUNNING_MODE", message: "Invalid running mode index", details: nil))
                 return
             }
 
-            result(FlutterReply(success: true))
+            result(nil)
         case "clearHandLandmarker":
-            handLandmarkerService.call.clearHandLandmarker()
             result(nil)
         case "isClose":
-            let result : NSNumber = NSNumber(value: handLandmarkerService.call.isClose())
-            result(result)
+            result(nil)
         case "setupHandLandmarker":
-            handLandmarkerService.call.setupHandLandmarker()
-            result(FlutterReply(success: true))
+            result(nil)
         case "detectLiveStream":
-            handLandmarkerService
             result(nil)
         case "detectVideoFile":
             result(nil)
@@ -90,11 +86,33 @@ public class HandLandmarkerMediapipePlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func resultBundleToList(resultBundle: ResultBundle) -> [Array{Array{Dictionary}}] {
-        var handList: [Array<Array<Dictionary>>] = []
-        for hand in resultBundle.handLandmarkerResults {
-            handList.append(hand.landmarks.map(\.data))
+    private func resultBundleToList(resultBundle: ResultBundle?) -> [[[String: Double]]] {
+        var handList: [[[String: Double]]] = []
+
+        guard let resultBundle = resultBundle else {
+            return handList
         }
+
+        for handResult in resultBundle.handLandmarkerResults {
+            var landmarkList: [[String: Double]] = []
+            
+            guard let landmarkGroups = handResult?.landmarks else {
+                continue
+            }
+
+            for landmarks in landmarkGroups {
+                for landmark in landmarks {
+                    landmarkList.append([
+                        "x": Double(landmark.x),
+                        "y": Double(landmark.y),
+                        "z": Double(landmark.z)
+                    ])
+                }
+            }
+
+            handList.append(landmarkList)
+        }
+
         return handList
     }
 }

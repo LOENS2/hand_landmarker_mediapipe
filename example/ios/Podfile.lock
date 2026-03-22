@@ -4,14 +4,23 @@ PODS:
   - Flutter (1.0.0)
   - hand_landmarker_mediapipe (0.0.1):
     - Flutter
+    - MediaPipeTasksVision (= 0.10.14)
   - integration_test (0.0.1):
     - Flutter
+  - MediaPipeTasksCommon (0.10.14)
+  - MediaPipeTasksVision (0.10.14):
+    - MediaPipeTasksCommon (= 0.10.14)
 
 DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
   - hand_landmarker_mediapipe (from `.symlinks/plugins/hand_landmarker_mediapipe/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+
+SPEC REPOS:
+  trunk:
+    - MediaPipeTasksCommon
+    - MediaPipeTasksVision
 
 EXTERNAL SOURCES:
   camera_avfoundation:
@@ -26,9 +35,11 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   camera_avfoundation: 968a9a5323c79a99c166ad9d7866bfd2047b5a9b
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  hand_landmarker_mediapipe: c825dea56c8c6dbe1e67b88ac7a626d0c7a6b391
+  hand_landmarker_mediapipe: b8a7bba43abbf20e97c98aa58221ab73f50e9e16
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  MediaPipeTasksCommon: 5660099c2dd81f7ac4a7a5f51055785ead8e0e64
+  MediaPipeTasksVision: 0fac0db83c0b45e4d7811a9227be5e571403cf83
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1
 
 COCOAPODS: 1.16.2
