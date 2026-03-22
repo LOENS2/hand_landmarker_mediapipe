@@ -13,7 +13,7 @@ A new Flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'Classes/**/*', 'Configurations/**/*', 'Services/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
 
@@ -26,4 +26,10 @@ A new Flutter plugin project.
   # plugin's privacy impact, and then uncomment this line. For more information,
   # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
   # s.resource_bundles = {'hand_landmarker_mediapipe_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {
+    'hand_landmarker_mediapipe_resources' => [
+      'Resources/PrivacyInfo.xcprivacy',
+      'Resources/hand_landmarker.task'
+    ]
+  }
 end
