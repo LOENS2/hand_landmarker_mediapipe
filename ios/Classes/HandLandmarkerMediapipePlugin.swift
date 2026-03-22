@@ -10,8 +10,25 @@ public class HandLandmarkerMediapipePlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
-    case "getPlatformVersion":
-      result("iOS " + UIDevice.current.systemVersion)
+    case "initialize":
+      let minHandDetectionConfidence = call.argument<Double>("minHandDetectionConfidence")
+      let minHandTrackingConfidence = call.argument<Double>("minHandTrackingConfidence")
+      let minHandPresenceConfidence = call.argument<Double>("minHandPresenceConfidence")
+      let maxNumHands = call.argument<Int>("maxNumHands")
+      let currentDelegate = call.argument<Int>("currentDelegate")
+      let runningMode = call.argument<Int>("runningMode")
+    case "clearHandLandmarker":
+      result(nil)
+    case "isClose":
+      result()
+    case "setupHandLandmarker":
+      result()
+    case "detectLiveStream":
+      result()
+    case "detectVideoFile":
+      result()
+    case "detectImgage":
+      result()
     default:
       result(FlutterMethodNotImplemented)
     }

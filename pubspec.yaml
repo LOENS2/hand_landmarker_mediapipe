@@ -40,7 +40,6 @@ flutter:
         package: com.loens2.hand_landmarker_mediapipe
         pluginClass: HandLandmarkerMediapipePlugin
       ios:
-        package: com.loens2.hand_landmarker_mediapipe
         pluginClass: HandLandmarkerMediapipePlugin
 
 
